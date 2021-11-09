@@ -52,6 +52,14 @@ int altura(NoArv *raiz){
     }
 }
 
+int quantidade_nos(NoArv *raiz){
+    if(raiz == NULL){ //verifica se a raiz é nula ou não
+        return 0; //caso a raiz seja nula retorna zero pois não há nós
+    }else
+        return 1 + quantidade_nos(raiz->esquerda) + quantidade_nos(raiz->direita); /*se a raiz não é nula ja soma 1 por ser a raiz e depois
+                                                                                   verifica as subarvores da esquerda e da direita para somar.*/
+}
+
 //imprimir de modo não ordenado
 void imprimir_versao1(NoArv *raiz){
 	if(raiz){ // verifica se a raiz é diferente de nulo
@@ -76,7 +84,7 @@ int main(){
 	int op, valor;
 
 	do{
-		printf("\n\t0- Sair\n\t1 - Inserir\n\t2 - Imprimir\n\t3 - Buscar\n\t4 - Altura\n\t"); scanf("%d", &op);
+		printf("\n\t0- Sair\n\t1 - Inserir\n\t2 - Imprimir\n\t3 - Buscar\n\t4 - Altura\n\t5 - Tamanho\n\t"); scanf("%d", &op);
 
 		switch(op){
 			case 1:
@@ -101,6 +109,9 @@ int main(){
                 break;
             case 4:
                 printf("\n\tAltura da arvore: %d\n\n", altura(raiz));
+                break;
+            case 5:
+                printf("\n\nQuantidade de nós: %d\n", quantidade_nos(raiz));
                 break;
 			default:
 				if(op != 0)
