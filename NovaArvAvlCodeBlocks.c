@@ -9,34 +9,34 @@ typedef struct no{
 	int altura;
 }NoArv;
 
-//Função que insere os nós na arvore
+//FunÃ§Ã£o que insere os nÃ³s na arvore
 NoArv* inserir(NoArv *raiz, int valor){
-	if(raiz == NULL){ //verifica se a raiz é nula
-		NoArv *aux = malloc(sizeof(NoArv)); //se a raiz não é nula, então aloca memória para o novo nó
-		aux->valor = valor;
-		aux->esquerda = NULL;
-		aux->direita = NULL;
-		return aux;
+	if(raiz == NULL){ //verifica se a raiz Ã© nula
+		return NovoNo(valor);
 	}else{
-		if(valor<raiz->valor){ //verifica se o valor que será inserido é menor ou maior que o valor da raiz
-			raiz->esquerda = inserir(raiz->esquerda, valor); //chama a função recursivamente passando o valor do nó a esquerda
+		if(valor<raiz->valor){ //verifica se o valor que serÃ¡ inserido Ã© menor ou maior que o valor da raiz
+			raiz->esquerda = inserir(raiz->esquerda, valor); //chama a funÃ§Ã£o recursivamente passando o valor do nÃ³ a esquerda
 		}else{
-			raiz->direita = inserir(raiz->direita, valor); //chama a função recursivamente passando o valor do nó a direita
+			raiz->direita = inserir(raiz->direita, valor); //chama a funÃ§Ã£o recursivamente passando o valor do nÃ³ a direita
 		}
-		return raiz; //retorna a raiz
 	}
+	raiz->altura = maior(alturaNo(raiz->esquerda), alturaNo(raiz->direita)) + 1; //traz a altura da arvore
+		
+	raiz = balancear(raiz); //faz o balanceamento da arvore logo apÃ³e inserir pois pode ser que ao inserir um elemento a arvore fique desbalanceada.
+	
+	return raiz; //retorna a raiz
 }
 
 NoArv *novoNo(int valor){
-    NoArv *num = malloc(sizeof(NoArv)); //se a raiz não é nula, então aloca memória para o novo nó
-		if (num){
+    NoArv *num = malloc(sizeof(NoArv)); //se a raiz nÃ£o Ã© nula, entÃ£o aloca memÃ³ria para o novo nÃ³
+	if (num){
             num->valor = valor;
             num->esquerda = NULL;
             num->direita = NULL;
             num->altura = 0;
-		}else
-            printf("\n\t\tSem memória!\n");
-		return valor;
+	}else
+            printf("\n\t\tSem memÃ³ria!\n");
+	return valor;
 }
 
 int maior(int a, int b){
@@ -57,8 +57,21 @@ int fatorBalanc(NoArv *No){
         return 0;
 }
 
+NoArv* balancear(NoArv *raiz){
+    int fb = fatorBalanc(raiz); //busca o fator de balanceamento da arvore
+	
+    if(fb < -1 && fatorBalanc(raiz->direita) <= 0)
+	raiz = rotesq(raiz);
+    else if (fb > 1 && fatorBalanc(raiz->esquerda) >= 0)
+	raiz = rotdir(raiz);
+    else if (fb > 1 && fatorBalanc(raiz->esquerda) < 0)
+	raiz = rotesqdir(raiz);
+    else if (fb < -1 && fatorBalanc(raiz->direita) > 0)
+	raiz = rotdiresq(raiz);
+}
+
 NoArv* buscar(NoArv *raiz, int num){
-    if(raiz){ //verifica se a arvore é nula ou se ja percorreu a arvore toda
+    if(raiz){ //verifica se a arvore Ã© nula ou se ja percorreu a arvore toda
         if(num == raiz->valor)
             return raiz;
         else if (num<raiz->valor)
@@ -84,41 +97,41 @@ int altura(NoArv *raiz){
 }
 
 int qtd_nos(NoArv *raiz){
-    if(raiz == NULL){ //verifica se a raiz é nula ou não
-        return 0; //caso a raiz seja nula retorna zero pois não há nós
+    if(raiz == NULL){ //verifica se a raiz Ã© nula ou nÃ£o
+        return 0; //caso a raiz seja nula retorna zero pois nÃ£o hÃ¡ nÃ³s
     }else
-        return 1 + qtd_nos(raiz->esquerda) + qtd_nos(raiz->direita); /*se a raiz não é nula ja soma 1 por ser a raiz e depois
+        return 1 + qtd_nos(raiz->esquerda) + qtd_nos(raiz->direita); /*se a raiz nÃ£o Ã© nula ja soma 1 por ser a raiz e depois
                                                                                    verifica as subarvores da esquerda e da direita para somar.*/
 }
 
-//função para calcular quantas folhas tem na arvore
+//funÃ§Ã£o para calcular quantas folhas tem na arvore
 int qtd_folhas(NoArv *raiz){
-    if(raiz == NULL) // se for não tiver raiz retorna 0
+    if(raiz == NULL) // se for nÃ£o tiver raiz retorna 0
         return 0;
-    else if (raiz->esquerda == NULL && raiz->direita == NULL) //se os dois lados do nó forem vazios, quer dizer que esse nó é um folha, então retorna 1;
+    else if (raiz->esquerda == NULL && raiz->direita == NULL) //se os dois lados do nÃ³ forem vazios, quer dizer que esse nÃ³ Ã© um folha, entÃ£o retorna 1;
         return 1;
     else
-        return qtd_folhas(raiz->esquerda) + qtd_folhas(raiz->direita); // chamada recursiva para a função, passando o lado esquerdo somando com a recursão pelo lado direito.
+        return qtd_folhas(raiz->esquerda) + qtd_folhas(raiz->direita); // chamada recursiva para a funÃ§Ã£o, passando o lado esquerdo somando com a recursÃ£o pelo lado direito.
 }
 
-//função para remover um nó folha
+//funÃ§Ã£o para remover um nÃ³ folha
 NoArv* remover(NoArv *raiz, int chave){
     if(raiz == NULL){
         printf("Valor nao encontrado!");
         return NULL;
     }else{
-        //procura o nó que quer remover
+        //procura o nÃ³ que quer remover
         if(raiz->valor == chave){
-            if(raiz->esquerda == NULL && raiz->direita == NULL){ //verifica se não há filhos no nó, portanto ele é uma folha e é removido.
-                free(raiz); //remove o nó
+            if(raiz->esquerda == NULL && raiz->direita == NULL){ //verifica se nÃ£o hÃ¡ filhos no nÃ³, portanto ele Ã© uma folha e Ã© removido.
+                free(raiz); //remove o nÃ³
                 printf("Elemento folha removido %d !\n", chave);
-                return NULL; //retorna nulo para o ponteiro do nó pai desse nó.
+                return NULL; //retorna nulo para o ponteiro do nÃ³ pai desse nÃ³.
             }else{
-                //Remover nó com 2 filhos
-                if(raiz->esquerda != NULL && raiz->direita != NULL){ // se o ponteiro pra direita e pra esquerda do nó não for nulo quer dizer que ele tem 2 filhos.
+                //Remover nÃ³ com 2 filhos
+                if(raiz->esquerda != NULL && raiz->direita != NULL){ // se o ponteiro pra direita e pra esquerda do nÃ³ nÃ£o for nulo quer dizer que ele tem 2 filhos.
                     if(raiz->esquerda != NULL && raiz->direita != NULL){
                         NoArv *aux = raiz->esquerda; //decidi percorrer pela esquerda
-                        while(aux->direita != NULL) // enquanto tiver filho na direita do nó o aux recebe o ponteiro da direita.
+                        while(aux->direita != NULL) // enquanto tiver filho na direita do nÃ³ o aux recebe o ponteiro da direita.
                             aux = aux->direita;
                         raiz->valor = aux->valor;
                         aux->valor = chave;
@@ -126,34 +139,44 @@ NoArv* remover(NoArv *raiz, int chave){
                         raiz->esquerda = remover(raiz->esquerda, chave);
                         return(raiz);
                     }
-                }else{ // aqui quer dizer que o nó tem um filho apenas, um dos dois ponteiros é nulo. Remover nó com 1 filho apenas
+                }else{ // aqui quer dizer que o nÃ³ tem um filho apenas, um dos dois ponteiros Ã© nulo. Remover nÃ³ com 1 filho apenas
                     NoArv *aux; // crio esse ponteiro auxiliar
-                    if(raiz->esquerda != NULL) //verifico se a esquerda do nó em questão não é nulo
-                        aux = raiz->esquerda; // atribuo o valor da esquerda do nó em questão pro ponteiro auxiliar que criei
-                    else //aqui é caso a direita do nó em questão é que tem filho
-                        aux = raiz->direita; // atribuo o valor da direita do nó em questão pro ponteiro auxiliar que criei
+                    if(raiz->esquerda != NULL) //verifico se a esquerda do nÃ³ em questÃ£o nÃ£o Ã© nulo
+                        aux = raiz->esquerda; // atribuo o valor da esquerda do nÃ³ em questÃ£o pro ponteiro auxiliar que criei
+                    else //aqui Ã© caso a direita do nÃ³ em questÃ£o Ã© que tem filho
+                        aux = raiz->direita; // atribuo o valor da direita do nÃ³ em questÃ£o pro ponteiro auxiliar que criei
                         printf("Elemento com 1 filho removido: %d !\n", chave);
-                    free(raiz); //elimino o nó que eu queria
-                    return aux; // retorno a variavel auxiliar que criei que agora aponta para o filho do nó que eu removi
+                    free(raiz); //elimino o nÃ³ que eu queria
+                    return aux; // retorno a variavel auxiliar que criei que agora aponta para o filho do nÃ³ que eu removi
                 }
             }
         }else{
-            if(chave < raiz->valor) // se o valor que quero remover é menor que o valor do nó q to veirificando, então vou pra esquerda
-                raiz->esquerda = remover(raiz->esquerda, chave); //chama a função recursivamente percorrendo a esquerda até achar o nó que quero remover
-            else // se o valor que quero remover é maior que o valor do nó q to veirificando, então vou pra direita
-                raiz->direita = remover(raiz->direita, chave); // chama a função recursivamente percorrendo a direita até achar o nó que quero remover
-            return raiz;
+            if(chave < raiz->valor) // se o valor que quero remover Ã© menor que o valor do nÃ³ q to veirificando, entÃ£o vou pra esquerda
+                raiz->esquerda = remover(raiz->esquerda, chave); //chama a funÃ§Ã£o recursivamente percorrendo a esquerda atÃ© achar o nÃ³ que quero remover
+            else // se o valor que quero remover Ã© maior que o valor do nÃ³ q to veirificando, entÃ£o vou pra direita
+                raiz->direita = remover(raiz->direita, chave); // chama a funÃ§Ã£o recursivamente percorrendo a direita atÃ© achar o nÃ³ que quero remover
         }
+	
+	raiz->altura = maior(alturaNo(raiz->esquerda), alturaNo(raiz->direita)) + 1;
+		
+	raiz = balancear(raiz);
+	    
+	return raiz;
     }
 }
 
 //imprimir de modo ordenado
 void imprimir(NoArv *raiz){
-	if(raiz){ // verifica se a raiz é diferente de nulo
-		imprimir(raiz->esquerda); //chama recursivamente pra imprimir a esquerda
-		printf("%d ", raiz->valor); //após não ter mais nenhum nó a esquerda imprime o valor que está no nó
-		imprimir(raiz->direita); //chama recursivamente pra imprimir a direita
-	}
+     if(raiz){ // verifica se a raiz Ã© diferente de nulo
+	imprimir(raiz->direita. nivel+1);
+	printf("\n\n");
+		
+	for(int i = 0;i<nivel;i++)
+	    printf("\t");
+		
+	printf("%d", raiz->valor);
+	imprimir(raiz->esquerda, nivel + 1;
+    }
 }
 
 int main(){
@@ -171,7 +194,7 @@ int main(){
 				raiz = inserir(raiz, valor);
 				break;
 			case 2:
-				printf("\n\tSegunda impressão:\n");
+				printf("\n\tSegunda impressÃ£o:\n");
 				imprimir(raiz);
 				printf("\n");
 				break;
@@ -181,13 +204,13 @@ int main(){
                 if(busca)
                     printf("\n\tValor encontrado: %d\n", busca->valor);
                 else
-                    printf("\n\tValor não encontrado.\n");
+                    printf("\n\tValor nÃ£o encontrado.\n");
                 break;
             case 4:
                 printf("\n\tAltura da arvore: %d\n\n", altura(raiz));
                 break;
             case 5:
-                printf("\n\nQuantidade de nós: %d\n", qtd_nos(raiz));
+                printf("\n\nQuantidade de nÃ³s: %d\n", qtd_nos(raiz));
                 break;
             case 6:
                 printf("\n\n\t Quantidade de folhas: %d\n", qtd_folhas(raiz));
@@ -201,7 +224,7 @@ int main(){
                 break;
 			default:
 				if(op != 0)
-					printf("\n\tOpção invalida.");
+					printf("\n\tOpÃ§Ã£o invalida.");
 				break;
 		}
 	}while(op!=0);
