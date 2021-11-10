@@ -164,14 +164,14 @@ int qtd_folhas(NoArv *raiz){
 //função para remover um nó folha
 NoArv* remover(NoArv *raiz, int chave){
     if(raiz == NULL){
-        printf("Valor nao encontrado!");
+        printf("\nValor nao encontrado!");
         return NULL;
     }else{
         //procura o nó que quer remover
         if(raiz->valor == chave){
             if(raiz->esquerda == NULL && raiz->direita == NULL){ //verifica se não há filhos no nó, portanto ele é uma folha e é removido.
                 free(raiz); //remove o nó
-                printf("Elemento folha removido %d !\n", chave);
+                printf("\n\tElemento folha removido %d !\n", chave);
                 return NULL; //retorna nulo para o ponteiro do nó pai desse nó.
             }else{
                 //Remover nó com 2 filhos
@@ -182,7 +182,7 @@ NoArv* remover(NoArv *raiz, int chave){
                             aux = aux->direita;
                         raiz->valor = aux->valor;
                         aux->valor = chave;
-                        printf("Trocado Elemento: %d !\n", chave);
+                        printf("\n\tTrocado Elemento: %d !\n", chave);
                         raiz->esquerda = remover(raiz->esquerda, chave);
                         return(raiz);
                     }
@@ -192,7 +192,7 @@ NoArv* remover(NoArv *raiz, int chave){
                         aux = raiz->esquerda; // atribuo o valor da esquerda do nó em questão pro ponteiro auxiliar que criei
                     else //aqui é caso a direita do nó em questão é que tem filho
                         aux = raiz->direita; // atribuo o valor da direita do nó em questão pro ponteiro auxiliar que criei
-                        printf("Elemento com 1 filho removido: %d !\n", chave);
+                        printf("\n\tElemento com 1 filho removido: %d !\n", chave);
                     free(raiz); //elimino o nó que eu queria
                     return aux; // retorno a variavel auxiliar que criei que agora aponta para o filho do nó que eu removi
                 }
@@ -230,7 +230,7 @@ int main(){
 	int op, valor;
 
 	do{
-		printf("\n\t0- Sair\n\t1 - Inserir\n\t2 - Imprimir\n\t3 - Buscar\n\t4 - Altura\n\t5 - Tamanho\n\t6 - Folhas\n\t7 - Remover Folha\n\t"); scanf("%d", &op);
+		printf("\n\tMENU:\n\t0 - Sair\n\t1 - Inserir\n\t2 - Imprimir\n\t3 - Buscar\n\t4 - Altura\n\t5 - Tamanho\n\t6 - Folhas\n\t7 - Remover Folha\n\t"); scanf("%d", &op);
 
 		switch(op){
 			case 1:
