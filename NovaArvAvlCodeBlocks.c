@@ -9,10 +9,98 @@ typedef struct no{
 	int altura;
 }NoArv;
 
+//adiciona um novo nó na arvore avl
+NoArv *novoNo(int valor){
+    NoArv *num = malloc(sizeof(NoArv)); //se a raiz não é nula, então aloca memória para o novo nó
+		if (num){
+            num->valor = valor;
+            num->esquerda = NULL;
+            num->direita = NULL;
+            num->altura = 0;
+		}else
+            printf("\n\t\tSem memória!\n");
+		return num;
+}
+
+int maior(int a, int b){
+    return a>b ? a: b;
+}
+
+//sltura de um nó na arvore avl
+int alturaNo(NoArv *No){
+    if(No ==NULL)
+        return -1;
+    else
+        return No->altura;
+}
+
+//fator de balanceamento da arvore avl
+int fatorBalanc(NoArv *No){
+    if(No)
+        return (alturaNo(No->esquerda) - alturaNo(No->direita));
+    else
+        return 0;
+}
+
+NoArv* rotesq(NoArv *r){
+    NoArv *y, *f;
+
+    y = r->direita;
+    f = y->esquerda;
+
+    y->esquerda = r;
+    r->direita = f;
+
+    r->altura = maior(alturaNo(r->esquerda), alturaNo(r->direita)) + 1;
+    y->altura = maior(alturaNo(y->esquerda), alturaNo(y->direita)) + 1;
+
+    return y;
+}
+
+NoArv* rotdir(NoArv *r){
+    NoArv *y, *f;
+
+    y = r->direita;
+    f = y->esquerda;
+
+    y->esquerda = r;
+    r->direita = f;
+
+    r->altura = maior(alturaNo(r->esquerda), alturaNo(r->direita)) + 1;
+    y->altura = maior(alturaNo(y->esquerda), alturaNo(y->direita)) + 1;
+
+    return y;
+}
+
+NoArv* rotdiresq(NoArv *r){
+    r->direita = rotdir(r->direita);
+    return rotesq(r);
+}
+
+NoArv* rotesqdir(NoArv *r){
+    r->esquerda = rotesq(r->esquerda);
+    return rotdir(r);
+}
+
+NoArv* balancear(NoArv *raiz){
+    int fb = fatorBalanc(raiz);
+
+    if (fb<-1 && fatorBalanc(raiz->direita)<=0)
+        raiz=rotesq(raiz);
+    else if (fb>1 && fatorBalanc(raiz->esquerda)>=0)
+        raiz=rotdir(raiz);
+    else if (fb>1 && fatorBalanc(raiz->esquerda)<0)
+        raiz=rotesqdir(raiz);
+    else if (fb>-1 && fatorBalanc(raiz->direita)>0)
+        raiz=rotdiresq(raiz);
+
+    return raiz;
+}
+
 //Função que insere os nós na arvore
 NoArv* inserir(NoArv *raiz, int valor){
 	if(raiz == NULL){ //verifica se a raiz é nula
-		return NovoNo(valor);
+		return novoNo(valor);
 	}else{
 		if(valor<raiz->valor){ //verifica se o valor que será inserido é menor ou maior que o valor da raiz
 			raiz->esquerda = inserir(raiz->esquerda, valor); //chama a função recursivamente passando o valor do nó a esquerda
@@ -21,55 +109,14 @@ NoArv* inserir(NoArv *raiz, int valor){
 		}
 	}
 	raiz->altura = maior(alturaNo(raiz->esquerda), alturaNo(raiz->direita)) + 1; //traz a altura da arvore
-		
+
 	raiz = balancear(raiz); //faz o balanceamento da arvore logo apóe inserir pois pode ser que ao inserir um elemento a arvore fique desbalanceada.
-	
+
 	return raiz; //retorna a raiz
 }
 
-NoArv *novoNo(int valor){
-    NoArv *num = malloc(sizeof(NoArv)); //se a raiz não é nula, então aloca memória para o novo nó
-	if (num){
-            num->valor = valor;
-            num->esquerda = NULL;
-            num->direita = NULL;
-            num->altura = 0;
-	}else
-            printf("\n\t\tSem memória!\n");
-	return valor;
-}
 
-int maior(int a, int b){
-    return a>b ? a: b;
-}
-
-int alturaNo(NoArv *No){
-    if(No ==NULL)
-        return -1;
-    else
-        return No->altura;
-}
-
-int fatorBalanc(NoArv *No){
-    if(No)
-        return (alturaNo(No->esquerda) - alturaNo(No->direita));
-    else
-        return 0;
-}
-
-NoArv* balancear(NoArv *raiz){
-    int fb = fatorBalanc(raiz); //busca o fator de balanceamento da arvore
-	
-    if(fb < -1 && fatorBalanc(raiz->direita) <= 0)
-	raiz = rotesq(raiz);
-    else if (fb > 1 && fatorBalanc(raiz->esquerda) >= 0)
-	raiz = rotdir(raiz);
-    else if (fb > 1 && fatorBalanc(raiz->esquerda) < 0)
-	raiz = rotesqdir(raiz);
-    else if (fb < -1 && fatorBalanc(raiz->direita) > 0)
-	raiz = rotdiresq(raiz);
-}
-
+//função para fazer uma busca
 NoArv* buscar(NoArv *raiz, int num){
     if(raiz){ //verifica se a arvore é nula ou se ja percorreu a arvore toda
         if(num == raiz->valor)
@@ -156,26 +203,23 @@ NoArv* remover(NoArv *raiz, int chave){
             else // se o valor que quero remover é maior que o valor do nó q to veirificando, então vou pra direita
                 raiz->direita = remover(raiz->direita, chave); // chama a função recursivamente percorrendo a direita até achar o nó que quero remover
         }
-	
-	raiz->altura = maior(alturaNo(raiz->esquerda), alturaNo(raiz->direita)) + 1;
-		
-	raiz = balancear(raiz);
-	    
-	return raiz;
+        raiz->altura = maior(alturaNo(raiz->esquerda), alturaNo(raiz->direita)) + 1;
+
+        raiz = balancear(raiz);
+
+        return raiz;
     }
 }
 
 //imprimir de modo ordenado
-void imprimir(NoArv *raiz){
-     if(raiz){ // verifica se a raiz é diferente de nulo
-	imprimir(raiz->direita. nivel+1);
-	printf("\n\n");
-		
-	for(int i = 0;i<nivel;i++)
-	    printf("\t");
-		
-	printf("%d", raiz->valor);
-	imprimir(raiz->esquerda, nivel + 1;
+void imprimir(NoArv *raiz, int nivel){
+	if (raiz){
+        imprimir(raiz->direita,nivel+1);
+        printf ("\n\n");
+        for (int i=0;i<nivel;i++)
+            printf ("\t");
+        printf ("%d",raiz->valor);
+        imprimir (raiz->esquerda,nivel+1);
     }
 }
 
@@ -194,8 +238,8 @@ int main(){
 				raiz = inserir(raiz, valor);
 				break;
 			case 2:
-				printf("\n\tSegunda impressão:\n");
-				imprimir(raiz);
+				printf("\n\tArvore Balanceada:\n");
+				imprimir(raiz, 1);
 				printf("\n");
 				break;
             case 3:
@@ -217,7 +261,7 @@ int main(){
                 break;
             case 7:
                 printf("\t");
-                imprimir(raiz);
+                imprimir(raiz, 1);
                 printf("\n\tDigite o valor a ser removido: ");
                 scanf("%d", &valor);
                 raiz = remover(raiz, valor);
